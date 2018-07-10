@@ -23,11 +23,11 @@ export class ShotChart extends React.Component {
                 y: (shot.locY + 50) / 10,
                 action_type: shot.actionType,
                 shot_distance: shot.shotDistance,
-                shot_made_flag: shot.shotMadeFlag,  //是否命中{1, 0}
+                shot_made_flag: shot.shotMadeFlag,  //whether get {1, 0}
             }));
             console.log(final_shots);
             const courtSelection = d3.select("#shot-chart");
-            courtSelection.html(''); //清空，以便重新render
+            courtSelection.html(''); //clear for re-render
             const chart_court = court().width(500);
             const chart_shots = shots().shotRenderThreshold(this.props.minCount).displayToolTips(this.props.displayToolTips).displayType(this.props.chartType);
             courtSelection.call(chart_court);
