@@ -3,34 +3,29 @@ import nba from 'nba';
 import {Profile} from "./Profile"
 import {DataViewContainer} from "./DataViewContainer"
 import {SearchBar} from "./SearchBar"
+import { DEFAULT_PLAYER_INFO } from '../constants';
 
 export class Main extends React.Component {
+
     state = {
-        playerInfo: {},
+        playerInfo: DEFAULT_PLAYER_INFO,
     }
 
     componentDidMount() {
-        this.loadPlayerInfo('Stephen Curry'); //default player
-    }
-
-    handleSelectPlayer = (name) => {
-        this.loadPlayerInfo(name);
+        this.loadPlayerInfo(this.state.playerInfo.fullName);
     }
 
     loadPlayerInfo = (playerName) => {
         nba.stats.playerInfo({ PlayerID: nba.findPlayer(playerName).playerId }).then((info) => {
             const playerInfo = Object.assign(info.commonPlayerInfo[0], info.playerHeadlineStats[0]);
-            console.log(playerInfo);
-            this.setState({
-                playerInfo: playerInfo,
-            });
+            this.setState({ playerInfo });
         });
     }
 
     render() {
         return (
             <div className="main">
-                <SearchBar className="" handleSelectPlayer={this.handleSelectPlayer}/>
+                <SearchBar loadPlayerInfo={this.loadPlayerInfo}/>
                 <div className="player">
                     <Profile playerInfo={this.state.playerInfo}/>
                     <DataViewContainer playerId={this.state.playerInfo.playerId}/>
@@ -38,5 +33,5 @@ export class Main extends React.Component {
             </div>
         );
     }
-
 }
+

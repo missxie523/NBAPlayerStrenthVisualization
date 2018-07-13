@@ -10,34 +10,38 @@ window.d3_hexbin = {hexbin : hexbin}; // workaround library problem
 export class ShotChart extends React.Component {
     static propTypes = {
         playerId: PropTypes.number,
-        chartType: PropTypes.string.isRequired,
-        displayToolTips: PropTypes.bool.isRequired,
+        minCount: PropTypes.number,
+        chartType: PropTypes.string,
+        displayTooltip: PropTypes.bool,
     }
 
     componentDidUpdate() {
-        nba.stats.shots({  //this is an API
+        nba.stats.shots({
             PlayerID: this.props.playerId
         }).then((response) => {
             const final_shots = response.shot_Chart_Detail.map(shot => ({
-                x: (shot.locX + 250) / 10,  //scale to new x,y for our chart
+                x: (shot.locX + 250) / 10,
                 y: (shot.locY + 50) / 10,
                 action_type: shot.actionType,
                 shot_distance: shot.shotDistance,
-                shot_made_flag: shot.shotMadeFlag,  //whether get {1, 0}
+                shot_made_flag: shot.shotMadeFlag,
             }));
-            console.log(final_shots);
+
             const courtSelection = d3.select("#shot-chart");
-            courtSelection.html(''); //clear for re-render
+            courtSelection.html('');
             const chart_court = court().width(500);
-            const chart_shots = shots().shotRenderThreshold(this.props.minCount).displayToolTips(this.props.displayToolTips).displayType(this.props.chartType);
+            const chart_shots = shots()
+                .shotRenderThreshold(this.props.minCount)
+                .displayToolTips(this.props.displayTooltip)
+                .displayType(this.props.chartType);
             courtSelection.call(chart_court);
             courtSelection.datum(final_shots).call(chart_shots);
         });
     }
-
     render() {
         return (
             <div id="shot-chart"></div>
         );
     }
 }
+

@@ -13,40 +13,31 @@ export class SearchBar extends React.Component {
     handleSearch = (value) => {
         console.log(value);
         this.setState({
-            dataSource: !value ? [] : nba.searchPlayers(value).map(player => ({
-                playerId: player.playerId,
-                fullName: player.fullName,
-            })),
+            dataSource: !value ? [] : nba.searchPlayers(value).map(({ fullName, playerId }) =>
+                <Option key={playerId} value={fullName}>
+                    <img className="player-option-image" src={`${PROFILE_PIC_URL_PREFIX}/${playerId}.png`}/>
+                    <span className="player-option-label">{fullName}</span>
+                </Option>
+            ),
         });
     }
 
-    onSelect = (value) => {
-        console.log('onSelect', value);
-        this.props.handleSelectPlayer(value);
+    onSelect = (playerName) => {
+        this.props.loadPlayerInfo(playerName);
     }
 
     render() {
         window.nba = nba;
         const { dataSource } = this.state;
-        const options = dataSource.map(player => (
-            <Option key={player.fullName} value={player.fullName} className="player-option">
-                <img src={`${PROFILE_PIC_URL_PREFIX}/${player.playerId}.png`} alt="Player" className="player-option-image"/>
-                <span className="player-option-label">{player.fullName}</span>
-            </Option>
-        ));
-        console.log(dataSource);
-        console.log(options)
-
         return (
             <AutoComplete
                 className="search-bar"
                 size="large"
-                dataSource={options}
+                dataSource={dataSource}
                 onSelect={this.onSelect}
                 onSearch={this.handleSearch}
-                placeholder="Please enter player name"
+                placeholder="Search NBA Player"
                 optionLabelProp="value"
-
             >
                 <Input suffix={<Icon type="search" className="certain-category-icon" />} />
             </AutoComplete>
